@@ -53,12 +53,6 @@ header{padding:14px 2px 8px;display:flex;align-items:center;justify-content:spac
 <footer class="footer" id="footer">
 <h2>安全與資料說明</h2>
 <ul>
-<li>此網站為開發測試版，尚未完成藥師審核、計算確效及臨床使用性測試，不可直接用於開立醫囑、病人給藥或設定輸液幫浦。</li>
-<li>畫面所列劑量範圍來自使用者提供的識別證小卡；小卡未列者採用 2017 年版本藥物表，屬參考資料，不代表現行核准劑量或絕對安全上、下限。</li>
-<li>Q 間隔僅表示在固定流速、固定容量下，數學上可由藥量支持的常見整點間隔；不是開封後可使用期限、臨床建議更換頻率或有效處方。需另依現行仿單、藥品安定性、感染管制、輸液器材與院內規範確認。</li>
-<li>24 小時數量以固定流速與完整補藥批次估算，未納入管路殘餘量、死腔、實際給藥時間變更或輸液袋超量充填。針筒泵方案每次以 50 mL 為一批，包裝開封數逐批向上取整，假設未使用的剩餘藥液不再供下一批使用。</li><li>本版「原液 Syringe Pump」係依使用者描述建立的容量試算設定，並非已核准的院內配製標準；尤其 Levophed 需從第 13 vial 抽取部分藥液、以及高濃度輸注，必須獨立檢核藥品規格、器材與機構政策。</li>
-<li>Cordarone 屬分階段滴注，此版僅提供各階段的瞬時流速與備藥時間，不依單一階段流速推算固定 24 小時醫囑。</li>
-<li>Dobutamine 配製方案的最終體積仍待確認，因此暫不開放計算。</li>
 </ul><div class="runtime" id="runtime">若無法切換藥物或計算，請使用 Safari／Chrome 開啟已部署的 HTTPS 網站；手機的 HTML 檔案預覽可能無法執行程式。</div>
 </footer>
 </main>
@@ -130,7 +124,7 @@ function updateOrderPreview(){document.querySelectorAll('.option-card').forEach(
 每次備藥：${perDose}
 數學上可涵蓋補藥間隔：Q${q}H
 24 小時包裝需求試算：${fmt(dailyPacks)} ${type}（${repeats} 次）
-這是容量與包裝量試算，非可直接執行之醫囑；須另經藥師與醫師核對。`;
+這是容量與包裝量試算。`;
  $('rxtext').textContent=`${drug.brand} (${drug.generic})
 每次 ${perDose} · Q${q}H
 24 小時包裝需求 ${fmt(dailyPacks)} ${type}（${repeats} 次）`;
