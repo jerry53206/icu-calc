@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="theme-color" content="#0c1627"/>
+<title>ICU Calc V1.0｜藥物輸注與醫囑備藥試算</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans TC",sans-serif;background:#0c1627;color:#eff6ff;color-scheme:dark}
+*{box-sizing:border-box}body{margin:0;padding:14px 12px max(40px,env(safe-area-inset-bottom))}.wrap{max-width:620px;margin:0 auto}h1{font-size:25px;letter-spacing:.2px;margin:6px 0 3px}h2{font-size:18px;margin:0 0 16px}h3{font-size:15px;margin:0 0 10px}p{margin:7px 0}button,select,input{font:inherit}button{cursor:pointer}
+header{padding:14px 2px 8px;display:flex;align-items:center;justify-content:space-between}.app-title{font-size:12px;color:#9eb8d2;letter-spacing:1.4px;font-weight:650}.version{background:#152d43;border:1px solid #406687;padding:7px 11px;color:#b8d5ea;border-radius:999px;font-size:12px}
+.card{background:#192b41;border:1px solid #3a5773;border-radius:18px;padding:17px 14px;margin:14px 0}.field{margin:13px 0}.field label{display:block;color:#d8e9fa;font-size:14px;font-weight:650;margin:0 0 7px}.hint{color:#b0c5d8;font-size:13px;line-height:1.5}.tiny{color:#b0c5d8;font-size:12px;line-height:1.5}.subtext{color:#c5d8e9;font-size:14px}.input,select{width:100%;min-height:52px;padding:12px;background:#102135;border:1px solid #6686a5;border-radius:11px;color:#f7fbff;font-size:17px;appearance:auto}select option{background:#162638;color:white}input:focus,select:focus,button:focus-visible{outline:2px solid #8dd3ff;outline-offset:2px}.quick{display:flex;gap:7px;overflow-x:auto;padding:8px 0 4px;scrollbar-width:thin}.quick button{background:#0e283d;border:1px solid #426582;color:#e4f1fc;border-radius:20px;padding:8px 12px;flex:none;font-size:13px}
+.conc{background:#103f60;border:1px solid #62b8e9;border-radius:14px;padding:13px 15px;margin:13px 0}.conc .big{display:block;font-size:29px;font-weight:800;line-height:1.2;margin:6px 0;overflow-wrap:anywhere}.conc .subtitle{font-size:12px;color:#c9e5fb}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.tile{background:#112237;border-radius:12px;padding:12px;min-height:72px}.tile b{display:block;font-size:16px;margin-top:7px;overflow-wrap:anywhere}.tile .hint{font-size:12px}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:7px}.seg button{border-radius:11px;background:#10263b;color:#d9eaf9;border:1px solid #587a99;font-size:15px;padding:13px 7px}.seg button.active{background:#27618a;border-color:#9bd9ff;color:#fff;font-weight:700}.inline-note{margin-top:6px;font-size:13px;color:#c1d3e3;line-height:1.6}.inline-error{margin-top:6px;font-size:13px;color:#ffcc91;font-weight:700;line-height:1.5}.confirm{width:100%;padding:15px;border-radius:12px;background:#255783;border:1px solid #83c5f7;color:#fff;font-weight:700;font-size:15px;margin-top:8px}.confirm.ack{background:#1b6657;border-color:#7ee2c4}.answer{background:#0d2235;padding:14px;border-radius:14px;margin-top:13px;text-align:center}.answer strong{display:block;font-size:31px;line-height:1.3;overflow-wrap:anywhere;margin:3px 0}.answer .hint{font-size:12px}.hide{display:none!important}
+.summary{display:flex;flex-wrap:wrap;gap:9px;margin-bottom:10px}.summary .stat{background:#11263d;border-radius:10px;padding:10px 12px;flex:1 1 130px}.stat b{display:block;margin-top:3px;font-size:17px}.stat span{font-size:12px;color:#b5cce0}.cards3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:12px 0}.option-card{min-width:0;background:#0e2438;border:1px solid #4d7391;color:#eff8ff;border-radius:12px;padding:13px 5px;text-align:center;display:flex;flex-direction:column;gap:5px;align-items:center}.option-card.active{background:#16496e;border:2px solid #91d7fb;padding:12px 4px}.option-card:disabled{opacity:.45;cursor:not-allowed}.option-card .item{font-weight:750;font-size:14px}.option-card .hours{font-weight:800;font-size:19px;color:#aee4ff}.option-card .qty{font-size:11px;color:#c4d8e8;line-height:1.5;white-space:pre-line}.option-card .q{font-size:13px;font-weight:700;color:#d8f5ff}.rx{background:#0e283d;border:1px solid #4b7596;border-radius:14px;padding:14px;margin:12px 0}.rx-title{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:16px;font-weight:750}.rx .line{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #30506c}.rx .line:last-of-type{border-bottom:0}.rx .line .k{color:#b7cfe2;font-size:13px}.rx .line .v{font-size:15px;text-align:right;font-weight:700;overflow-wrap:anywhere}.rx-copy{background:#173d5c;padding:13px;border-radius:10px;line-height:1.7;font-size:14px;white-space:pre-wrap;overflow-wrap:anywhere}.actions{display:flex;gap:10px;margin-top:16px}.actions button{flex:1;background:#0e2a44;border:1px solid #5e83a2;color:#e7f5ff;border-radius:10px;padding:12px 10px;font-size:14px}button:disabled{opacity:.45}.footer{font-size:12px;line-height:1.8;color:#c8d6e5;border-top:1px solid #415b75;padding:18px 6px 30px;margin-top:15px}.footer h2{font-size:15px}.footer ul{padding-left:20px;margin:8px 0}.footer li{margin:4px 0}.footer .runtime{font-weight:700;color:#ffd293}.pill{border-radius:999px;background:#29445c;padding:5px 9px;font-size:12px;color:#d6e9f9}.center{text-align:center}
+@media(max-width:365px){.card{padding:14px 10px}.option-card .hours{font-size:17px}.option-card .item{font-size:12px}.option-card{padding:10px 3px}.option-card.active{padding:9px 2px}.conc .big{font-size:26px}}@media(min-width:560px){body{padding-top:25px}.card{padding:20px}}
+</style></head>
+<body><main class="wrap">
+<header><div><div class="app-title">ICU CALC · V1.0</div><h1>藥物輸注換算</h1></div><span class="version">成人 ICU</span></header>
+<section class="card"><h2>01 選擇藥物與配製方式</h2>
+<div class="field"><label for="drug">藥名（商品名／學名）</label><select id="drug"><option value="levo">Levophed (Norepinephrine)</option><option value="gipa">Gipamine (Dopamine)</option><option value="dobu">Dobutamine (Dobutamine)</option><option value="per">Perdipine (Nicardipine)</option><option value="dormi">Dormicum (Midazolam)</option><option value="prop">Propofol 2% (Propofol)</option><option value="nimb">Nimbex (Cisatracurium)</option><option value="cord">Cordarone (Amiodarone)</option><option value="epi">Adrenaline (Epinephrine)</option><option value="ntg">NTG (Nitroglycerin)</option><option value="pre">Precedex (Dexmedetomidine)</option><option value="fent">Fentanyl (Fentanyl)</option></select><div class="quick" id="quick"></div></div>
+<div class="field"><label for="prep">配製方案</label><select id="prep"></select></div>
+<div class="conc"><span class="hint">計算濃度</span><strong id="conc" class="big">—</strong><div class="subtitle" id="concnote">請選擇配製方案</div></div>
+<div class="grid2"><div class="tile"><span class="hint">藥品規格</span><b id="spec">—</b></div><div class="tile"><span class="hint">每批包裝數</span><b id="packs">—</b></div><div class="tile"><span class="hint">總藥量</span><b id="mass">—</b></div><div class="tile"><span class="hint">計算總體積</span><b id="volume">—</b></div></div>
+<div id="unknown" class="inline-error hide">尚未確認本方案的最終體積，暫無法計算流速或醫囑數量。</div>
+</section>
+<section class="card"><h2>02 劑量與流速換算</h2>
+<div class="seg"><button id="forward" class="active" type="button">劑量 → 流速</button><button id="reverse" type="button">流速 → 劑量</button></div>
+<div class="field"><label for="unit">醫囑劑量單位</label><select id="unit"><option>mcg/min</option><option>mcg/kg/min</option><option>mg/kg/hr</option><option>mg/hr</option><option>mg/min</option><option>mcg/kg/hr</option><option>mcg/hr</option></select></div>
+<div class="field" id="weightbox"><label for="weight">醫囑採用體重（kg）</label><input id="weight" class="input" inputmode="decimal" type="number" min="0" step="any" placeholder="輸入體重"></div>
+<div class="field"><label id="valuelabel" for="value">醫囑劑量</label><input id="value" class="input" inputmode="decimal" type="number" min="0" step="any" placeholder="輸入醫囑數值"><div id="range" class="inline-note"></div><div id="outside" class="inline-error" aria-live="polite"></div></div>
+<button class="confirm" id="confirm" type="button" aria-pressed="false">確認已核對藥品、配製方案、濃度與醫囑單位</button>
+<div class="answer"><span class="hint">換算結果</span><strong id="result">—</strong><span id="resultunit">mL/hr</span></div>
+</section>
+<section class="card"><h2>03 醫囑開立與備藥量試算</h2>
+<div class="summary"><div class="stat"><span>目前幫浦流速</span><b id="currentRate">—</b></div><div class="stat"><span>24 小時理論消耗量</span><b id="dailyVolume">—</b></div></div>
+<div class="subtext">點選下方 1、2、3 個包裝或配製批次，比較可涵蓋的補藥間隔：</div>
+<div class="cards3">
+<button class="option-card active" data-n="1" type="button" disabled><span class="item" id="pkgtitle1">1 支／批</span><span class="hours" id="time1">—</span><span class="qty" id="pkgdetail1">—</span><span class="q" id="q1">—</span></button>
+<button class="option-card" data-n="2" type="button" disabled><span class="item" id="pkgtitle2">2 支／批</span><span class="hours" id="time2">—</span><span class="qty" id="pkgdetail2">—</span><span class="q" id="q2">—</span></button>
+<button class="option-card" data-n="3" type="button" disabled><span class="item" id="pkgtitle3">3 支／批</span><span class="hours" id="time3">—</span><span class="qty" id="pkgdetail3">—</span><span class="q" id="q3">—</span></button>
+</div>
+<div class="rx" id="rxpanel" aria-live="polite">
+<div class="rx-title">醫囑數量試算 <span class="pill" id="rxstate">待計算</span></div>
+<div class="line"><span class="k">每次備藥</span><span class="v" id="rxper">—</span></div>
+<div class="line"><span class="k">容量可涵蓋的 Q 間隔</span><span class="v" id="rxq">—</span></div>
+<div class="line"><span class="k">24 小時理論開立總數</span><span class="v" id="rxdaily">—</span></div>
+<h3 style="margin-top:12px">供醫師核對的文字草稿</h3><div class="rx-copy" id="rxtext">完成計算後顯示</div>
+<div class="actions"><button id="copyOrder" type="button" disabled>複製數量試算</button></div>
+</div>
+<div class="actions"><button id="clear" type="button">清除數值</button><button id="copy" type="button" disabled>複製換算摘要</button></div>
+</section>
+<footer class="footer" id="footer">
+<h2>安全與資料說明</h2>
+<ul>
+<li>此網站為開發測試版，尚未完成藥師審核、計算確效及臨床使用性測試，不可直接用於開立醫囑、病人給藥或設定輸液幫浦。</li>
+<li>畫面所列劑量範圍來自使用者提供的識別證小卡；小卡未列者採用 2017 年版本藥物表，屬參考資料，不代表現行核准劑量或絕對安全上、下限。</li>
+<li>Q 間隔僅表示在固定流速、固定容量下，數學上可由藥量支持的常見整點間隔；不是開封後可使用期限、臨床建議更換頻率或有效處方。需另依現行仿單、藥品安定性、感染管制、輸液器材與院內規範確認。</li>
+<li>24 小時數量以固定流速與完整補藥批次估算，未納入管路殘餘量、死腔、實際給藥時間變更或輸液袋超量充填。</li>
+<li>Cordarone 屬分階段滴注，此版僅提供各階段的瞬時流速與備藥時間，不依單一階段流速推算固定 24 小時醫囑。</li>
+<li>Dobutamine 配製方案的最終體積仍待確認，因此暫不開放計算。</li>
+</ul><div class="runtime" id="runtime">若無法切換藥物或計算，請使用 Safari／Chrome 開啟已部署的 HTTPS 網站；手機的 HTML 檔案預覽可能無法執行程式。</div>
+</footer>
+</main>
+<script>
+const DRUGS=[{"id":"levo","brand":"Levophed","generic":"Norepinephrine","spec":"1 mg/mL · 4 mL/vial","unit":"mcg/min","range":"起始 4 mcg/min；維持 8–12 mcg/min","lo":8,"hi":12,"options":[["稀泡 · 2 vials",8,250,"2 vials","D5W；計算總體積 250 mL"],["濃泡 · 4 vials",16,250,"4 vials","D5W；計算總體積 250 mL"]],"packMg":4,"packMl":4,"packType":"vial","displayUnit":"mcg"},{"id":"gipa","brand":"Gipamine","generic":"Dopamine","spec":"600 mg/200 mL/bag","unit":"mcg/kg/min","range":"維持 2–20 mcg/kg/min","lo":2,"hi":20,"options":[["預混袋裝",600,200,"1 bag","袋裝即用型 600 mg / 200 mL"]],"packMg":600,"packMl":200,"packType":"bag"},{"id":"dobu","brand":"Dobutamine","generic":"Dobutamine","spec":"50 mg/mL · 5 mL/amp（250 mg/amp）","unit":"mcg/kg/min","range":"維持 2.5–20 mcg/kg/min","lo":2.5,"hi":20,"options":[["2 amps · 500 mg / 250 mL（總體積待核）",500,null,"2 amps","稀釋液與最終體積待確認，僅供規格參考"]],"packMg":250,"packMl":5,"packType":"amp"},{"id":"per","brand":"Perdipine","generic":"Nicardipine","spec":"10 mg/10 mL/amp","unit":"mcg/kg/min","range":"維持 0.5–6 mcg/kg/min","lo":0.5,"hi":6,"options":[["原液 Pure",10,10,"1 amp","1 mg/mL"],["稀釋 5 amps + NS/D5W 200 mL",50,250,"5 amps","50 mL 藥液＋200 mL 稀釋液"]],"packMg":10,"packMl":10,"packType":"amp"},{"id":"dormi","brand":"Dormicum","generic":"Midazolam","spec":"5 mg/5 mL/amp","unit":"mg/kg/hr","range":"起始 0.03–0.3 mg/kg（單次）；維持 0.03–0.3 mg/kg/hr","lo":0.03,"hi":0.3,"options":[["原液 Pure",5,5,"1 amp","1 mg/mL"]],"packMg":5,"packMl":5,"packType":"amp"},{"id":"prop","brand":"Propofol 2%","generic":"Propofol","spec":"2% · 20 mg/mL · 50 mL/vial","unit":"mg/kg/hr","range":"維持 0.3–4 mg/kg/hr（不適用 bolus）","lo":0.3,"hi":4,"options":[["原液 2% · 1 vial / 50 mL",1000,50,"1 vial","每瓶 50 mL，共 1000 mg，20 mg/mL"]],"packMg":1000,"packMl":50,"packType":"vial"},{"id":"nimb","brand":"Nimbex","generic":"Cisatracurium","spec":"10 mg/5 mL/amp","unit":"mcg/kg/min","range":"持續輸注 0.5–10 mcg/kg/min","lo":0.5,"hi":10,"options":[["原液 Pure",10,5,"1 amp","2 mg/mL"]],"packMg":10,"packMl":5,"packType":"amp"},{"id":"cord","brand":"Cordarone","generic":"Amiodarone","spec":"150 mg/3 mL/amp","unit":"mg/min","range":"前 6 小時 1 mg/min；後 18 小時 0.5 mg/min","lo":null,"hi":null,"options":[["6 amps + D5W 482 mL",900,500,"6 amps","18 mL 藥液＋482 mL D5W；僅 D5W；前 6h 約 33.33 mL/hr，後 18h 約 16.67 mL/hr"]],"packMg":150,"packMl":3,"packType":"amp"},{"id":"epi","brand":"Adrenaline","generic":"Epinephrine","spec":"1 mg/1 mL/amp","unit":"mcg/min","range":"嚴重低血壓持續輸注 2–10 mcg/min","lo":2,"hi":10,"options":[["5 amps / 最終 NS 500 mL",5,500,"5 amps","先從 NS 500 mL 抽除 5 mL，加入 5 mL 藥液；10 mcg/mL"]],"packMg":1,"packMl":1,"packType":"amp","displayUnit":"mcg"},{"id":"ntg","brand":"NTG","generic":"Nitroglycerin","spec":"5 mg / 10 mL / amp","unit":"mcg/min","range":"起始 5 mcg/min；維持 5–20 mcg/min","lo":5,"hi":20,"options":[["5 amps · 25 mg / 250 mL",25,250,"5 amps","5 amp 藥液 50 mL，補足至總體積 250 mL；需使用適當 NTG 管路"],["10 amps · 50 mg / 250 mL",50,250,"10 amps","10 amp 藥液 100 mL，補足至總體積 250 mL；需使用適當 NTG 管路"]],"packMg":5,"packMl":10,"packType":"amp","displayUnit":"mcg"},{"id":"pre","brand":"Precedex","generic":"Dexmedetomidine","spec":"200 mcg/2 mL/vial","unit":"mcg/kg/hr","range":"維持 0.2–0.7 mcg/kg/hr","lo":0.2,"hi":0.7,"massUnit":"mcg","options":[["1 vial + NS/D5W 48 mL",200,50,"1 vial","2 mL 藥液 + 48 mL 稀釋液，4 mcg/mL"]],"packMg":200,"packMl":2,"packType":"vial"},{"id":"fent","brand":"Fentanyl","generic":"Fentanyl","spec":"0.5 mg/10 mL/amp","unit":"mcg/hr","range":"持續輸注 50–100 mcg/hr","lo":50,"hi":100,"massUnit":"mcg","options":[["1 amp + NS 40 mL",500,50,"1 amp","10 mL 藥液 + 40 mL NS，10 mcg/mL"]],"packMg":500,"packMl":10,"packType":"amp"}];
+(function(){'use strict';
+const $=id=>document.getElementById(id);
+const fmt=(x,n=4)=>Number.isFinite(x)?Number(x.toPrecision(13)).toLocaleString('en-US',{maximumFractionDigits:n}):'—';
+const positive=value=>String(value).trim()!==''&&Number.isFinite(Number(value))&&Number(value)>0;
+const slots=[1,2,3],qSlots=[1,2,3,4,6,8,12,24];
+let drug=DRUGS[0],prep=null,dir='f',confirmed=false,selectedCount=1,activeRate=NaN,orderText='';
+function unitsPerBatch(){return prep&&drug.packMg>0?Number(prep[1])/Number(drug.packMg):NaN;}
+function unitWord(){return drug.packType==='vial'?'vial':drug.packType==='bag'?'bag':'amp';}
+function isPure(){return prep&&(prep[0].toLowerCase().includes('pure')||['prop','gipa'].includes(drug.id));}
+function usesBatches(){return !isPure();}
+function perUnitVolume(){return prep&&prep[2]>0?Number(prep[2]):NaN;}
+function labelCount(n){return usesBatches()?`${n} 批（${fmt(n*unitsPerBatch())} ${unitWord()}）`:`${n} ${unitWord()}`;}
+function updateConfirmationState(){confirmed=false;$('confirm').classList.remove('ack');$('confirm').setAttribute('aria-pressed','false');$('confirm').textContent='確認已核對藥品、配製方案、濃度與醫囑單位';render();}
+function onDrugChange(){drug=DRUGS.find(d=>d.id===$('drug').value)||DRUGS[0];$('prep').innerHTML='';drug.options.forEach((p,i)=>{const option=document.createElement('option');option.value=i;option.textContent=p[0];$('prep').appendChild(option)});$('unit').value=drug.unit;$('weight').value='';$('value').value='';selectedCount=1;onPrepChange()}
+function onPrepChange(){prep=drug.options[Number($('prep').value)]||drug.options[0];const mu=drug.massUnit||'mg',vu=drug.displayUnit||mu,conc=prep[2]>0?prep[1]/prep[2]:NaN;const shown=mu==='mg'&&vu==='mcg'?conc*1000:mu==='mcg'&&vu==='mg'?conc/1000:conc;$('conc').textContent=prep[2]>0?`${fmt(shown)} ${vu}/mL`:'待確認';$('concnote').textContent=prep[4]||'';$('spec').textContent=drug.spec;$('packs').textContent=prep[3];$('mass').textContent=`${fmt(prep[1])} ${drug.massUnit||'mg'}`;$('volume').textContent=prep[2]>0?`${fmt(prep[2])} mL`:'待確認';$('unknown').classList.toggle('hide',Boolean(prep[2]>0));$('range').textContent='參考劑量：'+drug.range;selectedCount=1;syncInputs();updateConfirmationState()}
+function syncInputs(){const unit=$('unit').value;$('weightbox').classList.toggle('hide',!unit.includes('/kg/'));$('valuelabel').textContent=dir==='f'?`醫囑劑量（${unit}）`:'幫浦流速（mL/hr）';$('forward').classList.toggle('active',dir==='f');$('reverse').classList.toggle('active',dir==='r');$('resultunit').textContent=dir==='f'?'mL/hr':unit;}
+function normalizedAmountPerHour(dose,unit,wt){let x=dose;if(unit.startsWith('mcg')) x/=1000; if(unit.includes('/kg/')){if(!(wt>0))return NaN;x*=wt;}if(unit.endsWith('/min'))x*=60;return x;}
+function compareBounds(){const val=Number($('value').value),wt=Number($('weight').value),u=$('unit').value;
+ $('outside').textContent='';if(dir!=='f'||!positive($('value').value)||drug.lo===null&&drug.hi===null)return;
+ const newDose=normalizedAmountPerHour(val,u,wt);const lo=drug.lo===null?-Infinity:normalizedAmountPerHour(drug.lo,drug.unit,wt);const hi=drug.hi===null?Infinity:normalizedAmountPerHour(drug.hi,drug.unit,wt);
+ if(!Number.isFinite(newDose)||Number.isNaN(lo)||Number.isNaN(hi))return;
+ if(newDose<lo-1e-10||newDose>hi+1e-10)$('outside').textContent='輸入數值超出目前顯示的參考劑量範圍，請核對醫囑。';}
+function unitMath(dose,wt){const massUnit=drug.massUnit||'mg';const unit=$('unit').value;if(massUnit!=='mg'&&massUnit!=='mcg')return NaN;
+ const unitFactor=unit.startsWith('mcg')?(massUnit==='mg'?1/1000:1):(massUnit==='mcg'?1000:1);
+ let m=dose*unitFactor;if(unit.includes('/kg/'))m*=wt;if(unit.endsWith('/min'))m*=60;return m;}
+function qFor(hours){let q=null;for(const candidate of qSlots){if(candidate<=hours+1e-9)q=candidate;}return q;}
+function resetSupply(){activeRate=NaN;orderText='';$('currentRate').textContent='—';$('dailyVolume').textContent='—';slots.forEach(n=>{const b=document.querySelector(`.option-card[data-n="${n}"]`);b.disabled=true;$('pkgtitle'+n).textContent=labelCount(n);$('time'+n).textContent='—';$('pkgdetail'+n).textContent='—';$('q'+n).textContent='—'});$('rxstate').textContent='待計算';$('rxper').textContent='—';$('rxq').textContent='—';$('rxdaily').textContent='—';$('rxtext').textContent='完成計算後顯示';$('copyOrder').disabled=true;}
+function updateSupply(rate){if(!Number.isFinite(rate)||rate<=0||!Number.isFinite(perUnitVolume())){resetSupply();return;}
+ activeRate=rate;$('currentRate').textContent=`${fmt(rate)} mL/hr`;$('dailyVolume').textContent=`${fmt(rate*24,2)} mL`;
+ const perVol=perUnitVolume();slots.forEach(n=>{const b=document.querySelector(`.option-card[data-n="${n}"]`);b.disabled=false;const hours=(n*perVol)/rate;const q=qFor(hours);$('pkgtitle'+n).textContent=usesBatches()?`${n} 批`:`${n} ${unitWord()}`;$('time'+n).textContent=`${fmt(hours,2)} h`;$('pkgdetail'+n).textContent=usesBatches()?`${fmt(n*unitsPerBatch())} ${unitWord()}
+${fmt(n*perVol)} mL`:`${fmt(n*perVol)} mL`;$('q'+n).textContent=drug.id==='cord'?'分階段':q===null?'未達 Q1H':`容量涵蓋 Q${q}H`});
+ updateOrderPreview();}
+function updateOrderPreview(){document.querySelectorAll('.option-card').forEach(b=>b.classList.toggle('active',Number(b.dataset.n)===selectedCount));
+ const rate=activeRate;if(!Number.isFinite(rate)||!(rate>0)){return;}
+ const perVol=perUnitVolume(),n=selectedCount,perQty=fmt(n*unitsPerBatch());const hours=n*perVol/rate;const q=qFor(hours),type=unitWord();
+ $('rxper').textContent=usesBatches()?`${n} 批（${perQty} ${type}）`:`${n} ${type}`;
+ if(drug.id==='cord'){$('rxstate').textContent='分階段輸注';$('rxq').textContent='不適用固定 QH';$('rxdaily').textContent='不以單一流速估算';$('rxtext').textContent='此藥包含不同輸注階段，請分別核對各階段醫囑與準備藥量。';$('copyOrder').disabled=true;orderText='';return;}
+ if(q===null){$('rxstate').textContent='容量不足';$('rxq').textContent='少於 1 小時';$('rxdaily').textContent='—';$('rxtext').textContent='此數量不足以涵蓋最短 Q1H 期間，請重新評估完整配製批次或院內藥品供應方式。';$('copyOrder').disabled=true;orderText='';return;}
+ const perDose=`${usesBatches()?`${n} 批完整配製（共 ${perQty} ${type}）`:`${n} ${type}`}`;
+ const dailyReps=Math.ceil(24/q),dailyPacks=fmt(dailyReps*n*unitsPerBatch());const coverage=fmt(rate*q,2),supplied=fmt(n*perVol,2);
+ $('rxstate').textContent='數量試算';$('rxq').textContent=`Q${q}H（${coverage} / ${supplied} mL）`;$('rxdaily').textContent=`${dailyPacks} ${type}／24H（${dailyReps} 次）`;
+ orderText=`${drug.brand} (${drug.generic})
+規格：${drug.spec}
+配製方式：${prep[0]}
+目前輸注流速：${fmt(rate)} mL/hr
+每次備藥：${perDose}
+容量可涵蓋補藥間隔：Q${q}H
+24 小時數量試算：${dailyPacks} ${type}（${dailyReps} 次）
+此為數量與頻率試算，須另經醫囑與藥學安全核對。`;
+ $('rxtext').textContent=`${drug.brand} (${drug.generic})
+每次 ${perDose} · Q${q}H
+24 小時總數 ${dailyPacks} ${type}（${dailyReps} 次）`;$('copyOrder').disabled=false;}
+function render(){syncInputs();compareBounds();const numeric=Number($('value').value),massUnit=drug.massUnit||'mg',unit=$('unit').value,c=prep&&prep[2]>0?prep[1]/prep[2]:NaN;
+ if(!confirmed||!positive($('value').value)||!Number.isFinite(c)||(unit.includes('/kg/')&&!positive($('weight').value))){$('result').textContent='—';$('copy').disabled=true;resetSupply();return;}
+ const wt=unit.includes('/kg/')?Number($('weight').value):1;let rate,result;
+ if(dir==='f'){const amount=unitMath(numeric,wt);rate=amount/c;result=rate;}else {rate=numeric;const massRate=rate*c;
+ let conversion=unit.startsWith('mcg')?(massUnit==='mg'?1000:1):(massUnit==='mcg'?0.001:1);
+ result=massRate*conversion/(unit.includes('/kg/')?wt:1)/(unit.endsWith('/min')?60:1);
+ }
+ if(!Number.isFinite(result)||result<0){$('result').textContent='—';$('copy').disabled=true;resetSupply();return;}
+ $('result').textContent=fmt(result);$('copy').disabled=false;updateSupply(rate);}
+function copyText(text){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).catch(()=>fallbackCopy(text));}else fallbackCopy(text)}
+function fallbackCopy(text){let ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove()}
+function init(){document.getElementById('runtime').textContent='';$('quick').innerHTML=['levo','gipa','per','dormi','prop','cord'].map(id=>{const d=DRUGS.find(x=>x.id===id);return `<button type="button" data-drug="${id}">${d.brand}</button>`}).join('');$('quick').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$('drug').value=b.dataset.drug;onDrugChange()});$('drug').addEventListener('change',onDrugChange);$('prep').addEventListener('change',onPrepChange);$('unit').addEventListener('change',()=>{syncInputs();updateConfirmationState()});$('weight').addEventListener('input',updateConfirmationState);$('value').addEventListener('input',updateConfirmationState);
+ $('forward').addEventListener('click',()=>{dir='f';$('value').value='';updateConfirmationState()});$('reverse').addEventListener('click',()=>{dir='r';$('value').value='';updateConfirmationState()});$('confirm').addEventListener('click',()=>{confirmed=!confirmed;$('confirm').classList.toggle('ack',confirmed);$('confirm').setAttribute('aria-pressed',String(confirmed));$('confirm').textContent=confirmed?'✓ 已確認（點擊可取消）':'確認已核對藥品、配製方案、濃度與醫囑單位';render()});document.querySelectorAll('.option-card').forEach(b=>b.addEventListener('click',()=>{selectedCount=Number(b.dataset.n);updateOrderPreview()}));$('clear').onclick=()=>{$('value').value='';$('weight').value='';updateConfirmationState()};$('copyOrder').onclick=()=>{if(orderText)copyText(orderText)};$('copy').onclick=()=>copyText(`${drug.brand} (${drug.generic})
+${prep[0]}
+濃度 ${$('conc').textContent}
+結果 ${$('result').textContent} ${$('resultunit').textContent}
+僅供模擬測試`);
+ onDrugChange();}
+ init();})();
+</script></body></html>
